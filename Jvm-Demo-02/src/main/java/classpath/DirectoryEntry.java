@@ -30,6 +30,7 @@ public class DirectoryEntry extends Entry {
         if (!Files.exists(file)) {
             return null;
         }
+        /*Files.readAllBytes() 是一个 Java 8 中的文件读取方法，用于读取指定路径下的文件的所有字节*/
         return Files.readAllBytes(file);
     }
 
