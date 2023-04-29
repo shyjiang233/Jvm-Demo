@@ -1,9 +1,9 @@
 package classFile;
 
 import classFile.attribute.AttributeInfo;
-import classFile.constantpool.ConstantBase;
-import classFile.constantpool.ConstantUtf8;
-import classFile.constantpool.Cp_info;
+import classFile.constantpool.*;
+import com.sun.org.apache.bcel.internal.classfile.ConstantInterfaceMethodref;
+import com.sun.org.apache.bcel.internal.classfile.ConstantMethodref;
 import common.*;
 import sun.reflect.ConstantPool;
 
@@ -24,17 +24,56 @@ public class ClassFile {
     public MethodInfo[] methods ;
     public U2 attributesCount;//本来含有的属性数量
     public AttributeInfo[] attributes ;
-      /*将字节码转换为ClassFile*/
-     public void  readByteCode(byte[] bytecode){
-         IOUtils.bytecode=bytecode;
-         IOUtils.index=0;
-         readAndCheckMagic();
-         readAndCheckVersion();
-         constantPoolCount=IOUtils.readU2();
-         Integer poolSize=ByteUtils.bytesToU16(constantPoolCount.u2);
-          /*读取常量池*/
-          readConstantPool(constantPool,poolSize);
-     }
+
+    /**
+     * 将字节码转换为ClassFile
+     * @param bytecode
+     */
+    public void processByteCode(byte[] bytecode) {
+        IOUtils.bytecode = bytecode;
+        IOUtils.index = 0;
+       readAndCheckMagic();
+      readAndCheckVersion();
+         Integer poolsize=ByteUtils.byteArr2Int(bytecode);
+         /*读取常量池*/
+       readConstantPool(constantPool,poolsize);
+        accessFlags = IOUtils.readU2();
+        thisClass = IOUtils.readU2();
+        superClass = IOUtils.readU2();
+        interfaceCount = IOUtils.readU2();
+       Integer  intfaceCount=ByteUtils.byteArr2Int(bytecode);
+        interfaces = new U2[intfaceCount];
+        for(Integer i = 0; i < intfaceCount; i ++){
+            interfaces[i] = IOUtils.readU2();
+        }
+        fieldCount = IOUtils.readU2();
+        Integer fieldCountInteger =ByteUtils.byteArr2Int(fieldCount.u2);
+        fields = readFields( fieldCountInteger);
+        methodsCount = IOUtils.readU2();
+        Integer methodsCountInteger = ByteUtils.byteArr2Int(methodsCount.u2);
+        methods = readMethods( methodsCountInteger);
+
+        attributesCount = IOUtils.readU2();
+        Integer tempAttributesCount = ByteUtils.byteArr2Int(attributesCount.u2);
+        attributes =  new AttributeInfo[tempAttributesCount];
+        for(Integer i = 0; i < tempAttributesCount; i ++){
+            readANDAttribute( i, attributes);
+        }
+
+
+    }
+
+    private void readANDAttribute(Integer i, AttributeInfo[] attributes) {
+    }
+
+    private MethodInfo[] readMethods(Integer methodsCountInteger) {
+        return  null;
+    }
+
+    private FieldInfo[] readFields(Integer fieldCountInteger) {
+    return  null;
+    }
+
     /**
      * 解析字节码中的常量池
      * @param constantPool
@@ -52,6 +91,89 @@ public class ClassFile {
                     constantUtf8.length=IOUtils.readU2();
                     Integer utf8Len=ByteUtils.bytesToU16(constantUtf8.length.u2);
                     constantUtf8.bytes=new U1[utf8Len];
+                    for(Integer j = 0; j < utf8Len; j ++){
+                        constantUtf8.bytes[j] = IOUtils.readU1();
+                    }
+                    constantPool.cpInfo[i] = constantUtf8;
+                case 3:
+                    ConstantInteger constantInteger = new ConstantInteger();
+                    constantInteger.tag = tag;
+                    constantInteger.bytes = IOUtils.readU4();
+                    constantPool.cpInfo[i] = constantInteger;
+                case 4:
+                    ConstantFloat constantFloat = new ConstantFloat();
+                    constantFloat.tag = tag;
+                    constantFloat.bytes = IOUtils.readU4();
+                    constantPool.cpInfo[i] = constantFloat;
+                case 5:
+                    ConstantLong constantLong = new ConstantLong();
+                    constantLong.tag = tag;
+                    constantLong.highBytes = IOUtils.readU4();
+                    constantLong.lowBytes = IOUtils.readU4();
+                    /*double和long类型会跳过一个常量标识*/
+                    constantPool.cpInfo[i ++] = constantLong;
+                case 6:
+                    ConstantDouble constantDouble = new ConstantDouble();
+                    constantDouble.tag = tag;
+                    constantDouble.highBytes = IOUtils.readU4();
+                    constantDouble.lowBytes = IOUtils.readU4();
+                    /*double和long类型会跳过一个常量标识*/
+                    constantPool.cpInfo[i ++] = constantDouble;
+                case 7:
+                    ConstantClass constantClass = new ConstantClass();
+                    constantClass.tag = tag;
+                    constantClass.nameIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantClass;
+                case 8:
+                    ConstantString constantString = new ConstantString();
+                    constantString.tag = tag;
+                    constantString.stringIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantString;
+                case 9:
+                    ConstantFieldRef constantFieldref = new ConstantFieldRef();
+                    constantFieldref.tag = tag;
+                    constantFieldref.classIndex = IOUtils.readU2();
+                    constantFieldref.nameAndTypeIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantFieldref;
+                case 10:
+                    ConstantMethodRef constantMethodref = new ConstantMethodRef();
+                    constantMethodref.tag = tag;
+                    constantMethodref.classIndex = IOUtils.readU2();
+                    constantMethodref.nameAndTypeIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantMethodref;
+                case 11:
+                    ConstantInterfaceMethodRef constantInterfaceMethodref = new ConstantInterfaceMethodRef();
+                    constantInterfaceMethodref.tag = tag;
+                    constantInterfaceMethodref.classIndex = IOUtils.readU2();
+                    constantInterfaceMethodref.nameAndTypeIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantInterfaceMethodref;
+                case 12:
+                    ConstantNameAndType  constantNameAndType = new ConstantNameAndType();
+                    constantNameAndType.tag = tag;
+                    constantNameAndType.nameIndex = IOUtils.readU2();
+                    constantNameAndType.descriptorIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantNameAndType;
+                case 15:
+                    ConstantMethodHandle constantMethodHandle=new ConstantMethodHandle();
+                    constantMethodHandle.tag = tag;
+                    constantMethodHandle.referenceKind = IOUtils.readU1();
+                    constantMethodHandle.referenceIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantMethodHandle;
+                case 16:
+                    ConstantMethodType constantMethodType = new ConstantMethodType();
+                    constantMethodType.tag = tag;
+                    constantMethodType.descriptorIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantMethodType;
+                case 18:
+                    ConstantInvokeDynamic constantInvokeDynamic = new ConstantInvokeDynamic();
+                    constantInvokeDynamic.tag = tag;
+                    constantInvokeDynamic.bootstrapMethodAttrIndex = IOUtils.readU2();
+                    constantInvokeDynamic.nameAndTypeIndex = IOUtils.readU2();
+                    constantPool.cpInfo[i] = constantInvokeDynamic;
+
+                default:
+                    System.out.println("constantPool integer_tag " + integerTag);
+                    return;
             }
         }
         
