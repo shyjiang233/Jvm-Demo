@@ -6,7 +6,17 @@ package common;
  * Desc:
  */
 public class ByteUtils {
-
+    /*一个字节的byte转换为int类型的API的示例代码*/
+    static public Integer byteArr2Int(byte[] bytes) {
+        Integer size = bytes.length;
+        /*bytes[0]为高位*/
+        Integer res = 0xff & bytes[0];
+        for (Integer i = 1; i < size; i++) {
+            //res = ((res << 8) + 0xff) & bytes[i];
+            res = (res << 8)  + (0xff & bytes[i]);
+        }
+        return res;
+    }
 
     public static String bytesToHexString(byte[] src) {
         return bytesToHexString(src, src.length);

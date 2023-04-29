@@ -1,11 +1,10 @@
 package classFile;
 
 import classFile.attribute.AttributeInfo;
+import classFile.constantpool.ConstantBase;
+import classFile.constantpool.ConstantUtf8;
 import classFile.constantpool.Cp_info;
-import common.ByteUtils;
-import common.IOUtils;
-import common.U2;
-import common.U4;
+import common.*;
 import sun.reflect.ConstantPool;
 
 public class ClassFile {
@@ -42,7 +41,19 @@ public class ClassFile {
      * @param poolSize
      */
     private void readConstantPool(Cp_info constantPool, Integer poolSize) {
-
+        constantPool.cpInfo=new ConstantBase[poolSize];
+        for (int i = 0; i <poolSize-1 ; i++) {
+            U1 tag=IOUtils.readU1();
+            Integer integerTag=ByteUtils.byteArr2Int(tag.u1);
+            switch (integerTag){
+                case 1:
+                    ConstantUtf8 constantUtf8=new ConstantUtf8();
+                    constantUtf8.tag=tag;
+                    constantUtf8.length=IOUtils.readU2();
+                    Integer utf8Len=ByteUtils.bytesToU16(constantUtf8.length.u2);
+                    constantUtf8.bytes=new U1[utf8Len];
+            }
+        }
         
 
      }
