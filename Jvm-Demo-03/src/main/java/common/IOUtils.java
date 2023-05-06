@@ -41,17 +41,17 @@ public class IOUtils {
         return new BigInteger(1, val).intValue();
     }
 
-    public float readU4Float() {
+    public float readU8Float() {
         byte[] val = readByte(8);
         return new BigInteger(1, val).floatValue();
     }
 
-    public long readU4Long() {
+    public long readU8Long() {
         byte[] val = readByte(8);
         return new BigInteger(1, val).longValue();
     }
 
-    public double readU4Double() {
+    public double readU8Double() {
         byte[] val = readByte(8);
         return new BigInteger(1, val).doubleValue();
     }
