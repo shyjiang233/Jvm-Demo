@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
      java -cp your/classpath yourClassName
      */
 public class CmdValidator {
-    private static final Pattern CMD_PATTERN = Pattern.compile("^java\\s+(-version|-\\?|-help|-cp|-classpath)\\s*(.*)$");
+    private static final Pattern CMD_PATTERN = Pattern.compile("^java\\s+(-version|-\\?|-help|-cp\\s+\\S+\\s+\\S+|-Xjre(\\s+\\S+)?)$");
      public  static  boolean isValidCmd(String cmdLine){
          Matcher matcher=CMD_PATTERN.matcher(cmdLine);
          return matcher.matches();

@@ -25,8 +25,10 @@ public class Cmd{
         CommadHandler helpHandler=new HelperHandler();
         CommadHandler vesionHandler=new VersionHandler();
         CommadHandler classpathHandler=new ClassPathHandler();
+        CommadHandler XjreHandler=new XjreHandler();
         helpHandler.setSuccessor(vesionHandler);
         vesionHandler.setSuccessor(classpathHandler);
+        classpathHandler.setSuccessor(XjreHandler);
         handler=helpHandler;
         String[] args = cmdLine.trim().split("\\s+");
         parseCmd(args);
