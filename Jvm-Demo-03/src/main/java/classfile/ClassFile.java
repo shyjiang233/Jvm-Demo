@@ -29,6 +29,11 @@ public class ClassFile {
           this.readAndCheckMagic(utils);
           this.readAndCheckVersion(utils);
           this.constantPool = this.readConstantPool(utils);
+          this.access_flags=utils.readU2();
+          this.this_classIdx=utils.readU2();
+          this.super_classIdx=utils.readU2();
+          this.interfaces=utils.readUs();
+
 
       }
 

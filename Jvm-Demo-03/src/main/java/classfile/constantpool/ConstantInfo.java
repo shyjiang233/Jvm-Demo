@@ -1,5 +1,6 @@
 package classfile.constantpool;
 
+import classfile.classconstant.*;
 import common.IOUtils;
 
 public interface ConstantInfo {
@@ -18,7 +19,7 @@ public interface ConstantInfo {
     int CONSTANT_TAG_METHODTYPE = 16;
     int CONSTANT_TAG_INVOKEDYNAMIC = 18;
 
-    void readInfo(IOUtils reader);
+    void readInfo(IOUtils utils);
 
     int tag();
 

@@ -41,8 +41,8 @@ public class IOUtils {
         return new BigInteger(1, val).intValue();
     }
 
-    public float readU8Float() {
-        byte[] val = readByte(8);
+    public float readU4Float() {
+        byte[] val = readByte(4);
         return new BigInteger(1, val).floatValue();
     }
 
