@@ -2,6 +2,9 @@ package classfile.attribute;
 
 import classfile.constantpool.ConstantPool;
 import common.IOUtils;
+
+
+
 /*   Author:theshy
 *    Desc:和常量池类似，各种属性表达的信息也各不相同，因此无法用
           统一的结构来定义。不同之处在于，常量是由Java虚拟机规范严格
@@ -19,6 +22,31 @@ public interface Attribute_info {
      void readInfo(IOUtils utils);//自己读取对应的属性信息
 
     static Attribute_info[] readAttributes(IOUtils utils, ConstantPool constantPool) {
-        return null;
+       int attributeCount=utils.readU2();
+       Attribute_info[] attribute_infos=new Attribute_info[attributeCount];
+        for (int i = 0; i < attributeCount; i++) {
+        attribute_infos[i]=readAttribute(utils,constantPool);
+        }
+        return  attribute_infos;
+    }
+    static Attribute_info readAttribute(IOUtils utils,ConstantPool constantPool){
+          int attribute_name_index=utils.readU2();
+          String  attrName=constantPool.getUtf8(attribute_name_index);
+          int  attribute_length=utils.readU4Int();
+           Attribute_info attribute_info=newAttributeInfo(attrName,attribute_length,constantPool);
+           attribute_info.readInfo(utils);
+           return  attribute_info;
+    }
+
+    static Attribute_info newAttributeInfo(String attrName, int attribute_length, ConstantPool constantPool) {
+          switch (attrName){
+              case "Deprecated":
+                  return new DeprecatedAttribute();
+              case "Code":
+                    return new CodeAttribute(constantPool);
+              default:
+                  return new UnidentifiableAttribute(attrName,attribute_length);
+          }
+
     }
 }
