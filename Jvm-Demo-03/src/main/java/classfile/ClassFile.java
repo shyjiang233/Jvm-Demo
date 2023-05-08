@@ -16,8 +16,8 @@ public class ClassFile {
         int this_classIdx;	//
         int super_classIdx;	//
        int[] interfaces;	//实现的接口,存放在数组中
-        Field_info fields[];	//数组中存放这各个字段
-        Method_info methods[];	//数组中存放着各个方法
+        Member_info fields[];	//数组中存放这各个字段
+        Member_info methods[];	//数组中存放着各个方法
         Attribute_info attributes[];	//数组中存放着各个属性
 
     /**
@@ -33,8 +33,8 @@ public class ClassFile {
           this.this_classIdx=utils.readU2();
           this.super_classIdx=utils.readU2();
           this.interfaces=utils.readUs();
-
-
+         this.fields= Member_info.readMembers(utils,constantPool);
+          this.methods = Member_info.readMembers(utils, constantPool);
       }
 
     private ConstantPool readConstantPool(IOUtils utils) {
