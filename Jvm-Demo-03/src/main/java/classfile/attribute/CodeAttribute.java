@@ -17,7 +17,25 @@ import lombok.Data;
     public CodeAttribute(ConstantPool constantPool) {
         this.constantPool = constantPool;
     }
+    public int maxStack() {
+        return this.maxStack;
+    }
 
+    public int maxLocals() {
+        return this.maxLocals;
+    }
+
+    public byte[] getCode() {
+        return this.code;
+    }
+
+    public ExceptionTableEntry[] exceptionTable() {
+        return this.exceptionTable;
+    }
+
+    public Attribute_info[] attributes() {
+        return this.attribute_infos;
+    }
     @Override
     public void readInfo(IOUtils utils) {
      this.maxStack=utils.readU2();
